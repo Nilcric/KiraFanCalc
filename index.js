@@ -68,7 +68,14 @@ var trans = {
   ナイト: ['ナイト', 'Knight', '骑士', '기사'],
   アルケミスト: ['アルケミスト', 'Alchemist', '炼金术士', '연금술사'],
 
-  開発中: ['開発中', 'Coming soon', '咕咕咕', 'WIP']
+  開発中: ['開発中', 'Coming soon', '咕咕咕', 'WIP'],
+
+  新バーション: [
+    'このページは廃止されてました。新バーションはこちら >',
+    "This page is out of maintenance. Please try the new verison >",
+    '旧版计算器已经不再维护，请前往新版计算器 >',
+    'このページは廃止されてました。新バーションはこちら >'
+  ]
 };
 
 function range(val, min, max) {
@@ -86,7 +93,7 @@ function elementrange(element, val) {
 Vue.component('trans', {
   props: ['t'],
   methods: {
-    trans: function(t) {
+    trans: function (t) {
       lang = 0;
       for (i in navigator.languages) {
         console.log(i, navigator.languages[i][0]);
@@ -117,7 +124,7 @@ var home = new Vue({
   }
 });
 
-Vue.filter('prettifyNum', function(a) {
+Vue.filter('prettifyNum', function (a) {
   if (isNaN(a)) {
     return 0;
   }
@@ -137,7 +144,7 @@ Vue.filter('prettifyNum', function(a) {
 var damagecalc = new Vue({
   el: '#damagecalc',
   data: {
-    render: 1, 
+    render: 1,
     ATK: null,
     DEF: null,
     skill: null,
@@ -156,26 +163,26 @@ var damagecalc = new Vue({
     CriticalUp: 0,
   },
   computed: {
-    elementCoef: function() {
+    elementCoef: function () {
       return (
-        (this.element==2.0 && this.ATKElement ? this.ATKElement : 0) / 100
+        (this.element == 2.0 && this.ATKElement ? this.ATKElement : 0) / 100
         + elementrange(this.element, this.element * (1.0 - (this.DEFElement ? this.DEFElement : 0) / 100))
       );
     },
-    damage: function() {
+    damage: function () {
       ans = parseInt(1.0 / 6.0
-          * Math.floor(1.0 * this.ATK * range(this.ATKbuff ? 1 + this.ATKbuff / 100 : 1, 0.50, 2.5))
-          / Math.floor(1.0 * this.DEF * range(this.DEFbuff ? 1 + this.DEFbuff / 100 : 1, 0.33, 2.0))
-          * this.skill
-          * this.elementCoef
-          * (this.oncebuff ? 1 + this.oncebuff / 100 : 1) 
-          * (this.critical ? 1.5 * range(1 + this.CriticalUp / 100, 1.0/1.5, 2) : 1.0) 
-          * (this.jump ? this.jump : 1)
+        * Math.floor(1.0 * this.ATK * range(this.ATKbuff ? 1 + this.ATKbuff / 100 : 1, 0.50, 2.5))
+        / Math.floor(1.0 * this.DEF * range(this.DEFbuff ? 1 + this.DEFbuff / 100 : 1, 0.33, 2.0))
+        * this.skill
+        * this.elementCoef
+        * (this.oncebuff ? 1 + this.oncebuff / 100 : 1)
+        * (this.critical ? 1.5 * range(1 + this.CriticalUp / 100, 1.0 / 1.5, 2) : 1.0)
+        * (this.jump ? this.jump : 1)
       );
       if (ans) this.averageDamage = parseInt(0.925 * ans);
       return ans;
     },
-    stun: function() {
+    stun: function () {
       return (
         range(
           (this.averageDamage / this.HP) * this.stunCoef * this.elementCoef,
@@ -184,16 +191,16 @@ var damagecalc = new Vue({
         ) * 100
       );
     },
-    stunDamage: function() {
+    stunDamage: function () {
       return this.HP / this.stunCoef / this.elementCoef
     }
   },
   methods: {
-    test: function() {
+    test: function () {
       alert('hello');
       return;
     },
-    rerender: function() {
+    rerender: function () {
       render = false;
       render = true;
       return;
@@ -211,19 +218,19 @@ var criticalcalc = new Vue({
     element: 1.0
   },
   computed: {
-    critical: function() {
+    critical: function () {
       return parseInt(
         this.element == 0.5
           ? 0
           : range(
-              this.luck0 *
-                1.2 *
-                (this.element == 2.0 ? 1.1 : 1.0) *
-                (1 + this.buff0 / 100) -
-                this.luck1 * (1 + this.buff1 / 100),
-              0,
-              100
-            )
+            this.luck0 *
+            1.2 *
+            (this.element == 2.0 ? 1.1 : 1.0) *
+            (1 + this.buff0 / 100) -
+            this.luck1 * (1 + this.buff1 / 100),
+            0,
+            100
+          )
       );
     }
   }
@@ -241,19 +248,19 @@ var ordercalc = new Vue({
     init: false
   },
   computed: {
-    order: function() {
+    order: function () {
       return range(
         (100 - Math.floor(((this.spd < 50 ? NaN : this.spd) - 50) / 2) - 1) *
-          this.load * (1 - this.lfrbuff * 0.01) * 
-          0.01 *
-          (1 - this.buff * 0.01),
+        this.load * (1 - this.lfrbuff * 0.01) *
+        0.01 *
+        (1 - this.buff * 0.01),
         15,
         500
       );
     }
   },
   methods: {
-    initialize: function() {
+    initialize: function () {
       //init = true;
       return;
     }
@@ -276,12 +283,12 @@ var statuscalc = new Vue({
     lv: null
   },
   computed: {
-    result: function() {
+    result: function () {
       ans = [null, null, null, null, null, null];
       for (var i = 0; i < 6; i++) {
         var a0 = Math.floor(
           this.init[i] /
-            (1 + (this.initlv - 1) * this.table[this.characlass][i])
+          (1 + (this.initlv - 1) * this.table[this.characlass][i])
         );
         var a1 = Math.ceil(
           a0 * (1 + (this.lv - 1) * this.table[this.characlass][i])
